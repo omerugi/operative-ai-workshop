@@ -2,7 +2,7 @@
 FROM jupyter/base-notebook
 
 # Install TensorFlow, Keras, scikit-learn, Seaborn, OpenCV, NumPy, pandas, matplotlib, and PyTorch
-RUN pip install tensorflow keras scikit-learn seaborn numpy pandas matplotlib
+RUN pip install tensorflow keras scikit-learn seaborn numpy pandas matplotlib faker ydata-profiling ipython ipywidgets
 
 # Install git
 USER root
