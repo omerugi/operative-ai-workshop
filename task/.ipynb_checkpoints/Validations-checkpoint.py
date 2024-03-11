@@ -5,9 +5,12 @@ import seaborn as sns
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 import requests
 from io import BytesIO
+import os
 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 sns.set(style="whitegrid")
 TF_ENABLE_ONEDNN_OPTS=0
+
 def validate_dataset_info(train_shape, num_train_images, train_image_height, train_image_width, train_channels, 
                           test_shape, num_test_images, test_image_height, test_image_width, test_channels, 
                           num_classes, train_images, test_images,train_labels,test_labels, class_names):
