@@ -1,4 +1,5 @@
 # Operative AI workshop
+![image](https://github.com/omerugi/operative-ai-workshop/assets/57361655/5f6b44c2-dff6-4c74-b1e7-7eb948c8721c)
 
 Requirements:
 * Docker on your machine.
