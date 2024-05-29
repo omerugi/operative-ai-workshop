@@ -5,6 +5,11 @@ import seaborn as sns
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 import requests
 from io import BytesIO
+import os
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+sns.set(style="whitegrid")
+TF_ENABLE_ONEDNN_OPTS=0
 
 def validate_dataset_info(train_shape, num_train_images, train_image_height, train_image_width, train_channels, 
                           test_shape, num_test_images, test_image_height, test_image_width, test_channels, 
@@ -115,9 +120,69 @@ def validate_norm_rage(train_images,test_images):
         return "Normalization succeeded"
     raise Exception(f"Wrong values: train max/min {train_images.max()}{train_images.min()} test max/min {test_images.max()}{test_images.min()}")
 
+def check_nulls_and_info(df):
+    """
+    Checks for null values in the DataFrame. If null values are found, an error is raised.
+    Otherwise, prints a message that no null values are present and shows the DataFrame info.
+
+    :param df: pandas DataFrame to check for null values.
+    """
+    if df.isnull().any().any():
+        raise ValueError("Null values found in the DataFrame.")
+    else:
+        print("No null values found in the DataFrame.")
+        df.info()
+
 def load_and_preprocess_image(url):
     response = requests.get(url)
     img = load_img(BytesIO(response.content), target_size=(32, 32))
     img_array = img_to_array(img) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
     return img_array
+
+def plot_feature_distribution(df, feature):
+    plt.figure(figsize=(10, 6))
+    sns.histplot(df[feature].dropna(), kde=True, bins=30)
+    plt.title(f'Distribution of {feature}')
+    plt.xlabel(feature)
+    plt.ylabel('Frequency')
+    plt.show()
+
+def plot_two_features(df, feature1, feature2):
+    plt.figure(figsize=(10, 6))
+    
+    if df[feature1].dtype == 'O' or df[feature2].dtype == 'O':
+        sns.boxplot(x=feature1, y=feature2, data=df)
+    else:  
+        sns.scatterplot(x=feature1, y=feature2, data=df)
+    
+    plt.title(f'{feature1} vs {feature2}')
+    plt.xlabel(feature1)
+    plt.ylabel(feature2)
+    plt.show()
+def plot_feature_distribution_with_gender(df, feature, gender_flag=False):
+    plt.figure(figsize=(10, 6))
+    
+    if gender_flag:
+        sns.histplot(data=df, x=feature, hue="sex", palette={"Male": "blue", "Female": "pink"}, kde=True, bins=30, element="step", alpha=0.5)
+    else:
+        sns.histplot(df[feature].dropna(), kde=True, bins=30)
+        
+    plt.title(f'Distribution of {feature} by Gender' if gender_flag else f'Distribution of {feature}')
+    plt.xlabel(feature)
+    plt.ylabel('Frequency')
+    plt.show()
+
+def plot_two_features_with_gender(df, feature1, feature2, gender_flag=False):
+    plt.figure(figsize=(10, 6))
+    
+    if gender_flag:
+        sns.scatterplot(x=feature1, y=feature2, hue="sex", palette={"Male": "blue", "Female": "pink"}, data=df)
+    else:
+        sns.scatterplot(x=feature1, y=feature2, data=df)
+    
+    plt.title(f'{feature1} vs {feature2} by Gender' if gender_flag else f'{feature1} vs {feature2}')
+    plt.xlabel(feature1)
+    plt.ylabel(feature2)
+    plt.legend(title='Sex', labels=['Male', 'Female']) if gender_flag else plt.legend().remove()
+    plt.show()
